@@ -21,7 +21,7 @@ public class TwitterButton extends OAuthButton {
 	/**
      * Creates a "Log in with Twitter" button that will use the given API
      * key/secret to authenticate the user with Twitter, and then call the given
-     * callback with {@link User} details.
+     * callback with {@link IOAuthUser} details.
      * 
      * @param caption
      *            button caption
@@ -40,7 +40,7 @@ public class TwitterButton extends OAuthButton {
     /**
      * Creates a button with the given caption that will use the given API
      * key/secret to authenticate the user with Twitter, and then call the given
-     * callback with {@link User} details.
+     * callback with {@link IOAuthUser} details.
      * 
      * @param caption
      *            button caption
@@ -80,7 +80,7 @@ public class TwitterButton extends OAuthButton {
     }
 
     @Override
-    protected Class<? extends User> getUserClass() {
+    protected Class<? extends IOAuthUser> getUserClass() {
         return TwitterUser.class;
     }
 
@@ -109,7 +109,7 @@ public class TwitterButton extends OAuthButton {
 
     }
 
-    public static class TwitterUser implements User {
+    public static class TwitterUser implements IOAuthUser {
 
         @SerializedName("screen_name")
         private String screenName;

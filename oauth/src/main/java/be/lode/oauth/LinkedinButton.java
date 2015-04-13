@@ -13,7 +13,7 @@ public class LinkedinButton extends OAuthButton {
 	/**
      * Creates a "Log in with LinkedIn" button that will use the given API
      * key/secret to authenticate the user with LinkedIn, and then call the
-     * given callback with {@link User} details.
+     * given callback with {@link IOAuthUser} details.
      * 
      * @param apiKey
      *            API key from the service providing OAuth
@@ -30,7 +30,7 @@ public class LinkedinButton extends OAuthButton {
     /**
      * Creates a button with the given caption that will use the given API
      * key/secret to authenticate the user with LinkedIn, and then call the
-     * given callback with {@link User} details.
+     * given callback with {@link IOAuthUser} details.
      * 
      * @param caption
      *            button caption
@@ -68,11 +68,11 @@ public class LinkedinButton extends OAuthButton {
     }
 
     @Override
-    protected Class<? extends User> getUserClass() {
+    protected Class<? extends IOAuthUser> getUserClass() {
         return LinkedinUser.class;
     }
 
-    public static class LinkedinUser implements User {
+    public static class LinkedinUser implements IOAuthUser {
 
         private String firstName;
         private String lastName;

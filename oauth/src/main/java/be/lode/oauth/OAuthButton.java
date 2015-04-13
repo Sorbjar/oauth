@@ -22,7 +22,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
-
+//TODO rebuild OAuth
 //import com.vaadin.ui.Button.ClickEvent;
 
 /**
@@ -142,12 +142,12 @@ public abstract class OAuthButton extends Button {
 	protected abstract String getJsonDataUrl();
 
 	/**
-	 * Gets the {@link User} implementation class for the user data that this
-	 * service provides.
+	 * Gets the {@link IOAuthUser} implementation class for the user data that
+	 * this service provides.
 	 *
-	 * @return {@link User} implementation class
+	 * @return {@link IOAuthUser} implementation class
 	 */
-	protected abstract Class<? extends User> getUserClass();
+	protected abstract Class<? extends IOAuthUser> getUserClass();
 
 	/**
 	 * Gets the OAuth service singleton.
@@ -201,7 +201,7 @@ public abstract class OAuthButton extends Button {
 					accessToken = service
 							.getAccessToken(requestToken, verifier);
 
-					User user = getUser();
+					IOAuthUser user = getUser();
 
 					getSession().removeRequestHandler(handler);
 					handler = null;
@@ -226,20 +226,20 @@ public abstract class OAuthButton extends Button {
 	}
 
 	/**
-	 * Creates and returns the {@link User} instance, usually by retreiving JSON
-	 * data from the url provided by {@link #getJsonDataUrl()}.
+	 * Creates and returns the {@link IOAuthUser} instance, usually by retreiving
+	 * JSON data from the url provided by {@link #getJsonDataUrl()}.
 	 *
-	 * @return the {@link User} instance containing user data from the service
+	 * @return the {@link IOAuthUser} instance containing user data from the
+	 *         service
 	 */
-	protected User getUser() {
+	protected IOAuthUser getUser() {
 		OAuthRequest request = new OAuthRequest(Verb.GET, getJsonDataUrl());
 		service.signRequest(accessToken, request);
 		Response response = request.send();
 
 		Gson gson = new Gson();
-		User user = gson.fromJson(response.getBody(), getUserClass());
+		IOAuthUser user = gson.fromJson(response.getBody(), getUserClass());
 
-		// TODO set the token/secret here?
 		try {
 			Field tokenField = user.getClass().getDeclaredField("token");
 			if (tokenField != null) {
@@ -254,7 +254,6 @@ public abstract class OAuthButton extends Button {
 				tokenSecretField.set(user, accessToken.getSecret());
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -262,11 +261,11 @@ public abstract class OAuthButton extends Button {
 	}
 
 	/**
-	 * Called when the {@link User} instance has been successfully created, or
-	 * the OAuth service returned a problem code.
+	 * Called when the {@link IOAuthUser} instance has been successfully created,
+	 * or the OAuth service returned a problem code.
 	 */
 	public interface OAuthListener {
-		public void userAuthenticated(User user);
+		public void userAuthenticated(IOAuthUser user);
 
 		public void failed(String reason);
 	}
@@ -277,12 +276,12 @@ public abstract class OAuthButton extends Button {
 	 * available trough the APIs.
 	 * <p>
 	 * The default {@link OAuthButton#getUser()} implementation sets the 'token'
-	 * and 'tokenSecret' member fields if such exist, so that the {@link User}
-	 * implementation can just return these in {@link #getToken()} and
-	 * {@link #getTokenSecret()}.
+	 * and 'tokenSecret' member fields if such exist, so that the
+	 * {@link IOAuthUser} implementation can just return these in
+	 * {@link #getToken()} and {@link #getTokenSecret()}.
 	 * </p>
 	 */
-	public static interface User {
+	public static interface IOAuthUser {
 
 		/**
 		 * Name of the OAuth service, e.g "facebook".
