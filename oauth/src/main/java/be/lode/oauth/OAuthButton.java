@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
@@ -198,16 +199,20 @@ public abstract class OAuthButton extends Button {
 				if (parameters.containsKey(getVerifierName())) {
 					String v = parameters.get(getVerifierName())[0];
 					Verifier verifier = new Verifier(v);
-					accessToken = service
-							.getAccessToken(requestToken, verifier);
+					try {
+						accessToken = service.getAccessToken(requestToken,
+								verifier);
 
-					IOAuthUser user = getUser();
+						IOAuthUser user = getUser();
 
-					getSession().removeRequestHandler(handler);
-					handler = null;
+						getSession().removeRequestHandler(handler);
+						handler = null;
 
-					authListener.userAuthenticated(user);
-
+						authListener.userAuthenticated(user);
+					} 
+					catch (OAuthException ex) {
+						//OAuth Exception with error code already used...
+					}
 					return false;
 
 				} else if (getFailureParameters() != null) {
@@ -226,8 +231,8 @@ public abstract class OAuthButton extends Button {
 	}
 
 	/**
-	 * Creates and returns the {@link IOAuthUser} instance, usually by retreiving
-	 * JSON data from the url provided by {@link #getJsonDataUrl()}.
+	 * Creates and returns the {@link IOAuthUser} instance, usually by
+	 * retreiving JSON data from the url provided by {@link #getJsonDataUrl()}.
 	 *
 	 * @return the {@link IOAuthUser} instance containing user data from the
 	 *         service
@@ -261,8 +266,8 @@ public abstract class OAuthButton extends Button {
 	}
 
 	/**
-	 * Called when the {@link IOAuthUser} instance has been successfully created,
-	 * or the OAuth service returned a problem code.
+	 * Called when the {@link IOAuthUser} instance has been successfully
+	 * created, or the OAuth service returned a problem code.
 	 */
 	public interface OAuthListener {
 		public void userAuthenticated(IOAuthUser user);
